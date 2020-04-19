@@ -1,17 +1,17 @@
 package com.marcinadd.repairshop.client;
 
 import com.marcinadd.repairshop.repairable.Repairable;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.CascadeType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.List;
 
 @Getter
 @Setter
+@Entity
+@Builder
 public class Client {
     @Id
     @GeneratedValue
@@ -25,6 +25,7 @@ public class Client {
 
     private String email;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Repairable> repairables;
+
 }
