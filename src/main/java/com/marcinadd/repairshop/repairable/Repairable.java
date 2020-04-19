@@ -1,15 +1,18 @@
 package com.marcinadd.repairshop.repairable;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.marcinadd.repairshop.client.Client;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
+@Entity
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Repairable {
     @Id
     @GeneratedValue
@@ -19,6 +22,11 @@ public class Repairable {
 
     private String serial;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     private Client owner;
+
+    @Transient
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private Long ownerId;
 }

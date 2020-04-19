@@ -1,9 +1,7 @@
 package com.marcinadd.repairshop.client;
 
 import com.marcinadd.repairshop.repairable.Repairable;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
@@ -12,6 +10,8 @@ import java.util.List;
 @Setter
 @Entity
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Client {
     @Id
     @GeneratedValue
