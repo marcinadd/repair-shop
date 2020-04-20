@@ -4,6 +4,7 @@ import com.marcinadd.repairshop.client.Client;
 import com.marcinadd.repairshop.client.ClientRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -25,6 +26,10 @@ public class RepairableService {
             return repairableRepository.save(repairable);
         }
         return null;
+    }
+
+    List<Repairable> findByOwner(Client owner) {
+        return repairableRepository.findByOwner(owner);
     }
 
 }
