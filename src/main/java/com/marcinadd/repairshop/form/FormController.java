@@ -23,4 +23,9 @@ public class FormController {
     public List<Form> getForms() {
         return formService.findAllForms();
     }
+
+    @GetMapping("{id}")
+    public Form getFormById(@PathVariable("id") Long id) {
+        return formService.findFormById(id);
+    }
 }

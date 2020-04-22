@@ -2,10 +2,12 @@ package com.marcinadd.repairshop.form;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.marcinadd.repairshop.client.Client;
+import com.marcinadd.repairshop.item.Item;
 import com.marcinadd.repairshop.repairable.Repairable;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Getter
 @Setter
@@ -35,4 +37,6 @@ public class Form {
     private String description;
 
     private Status status;
+    @OneToMany
+    private List<Item> items;
 }

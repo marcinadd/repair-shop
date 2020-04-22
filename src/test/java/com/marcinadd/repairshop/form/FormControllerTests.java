@@ -48,6 +48,7 @@ public class FormControllerTests {
 
     private Client client;
     private Repairable repairable;
+    private Form form;
 
     @Before
     public void init() {
@@ -59,8 +60,9 @@ public class FormControllerTests {
                 .id(2L)
                 .owner(client)
                 .build();
-        Form form = Form.builder()
+        form = Form.builder()
                 .id(3L)
+                .description("Sample desc")
                 .repairable(repairable)
                 .client(client)
                 .build();
@@ -73,6 +75,9 @@ public class FormControllerTests {
 
         Mockito.when(formRepository.findAll())
                 .thenReturn(Collections.singletonList(form));
+
+        Mockito.when(formRepository.findById(form.getId()))
+                .thenReturn(java.util.Optional.of(form));
     }
 
     @Test
@@ -91,5 +96,13 @@ public class FormControllerTests {
         mockMvc.perform(get("/forms"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)));
+    }
+
+    @Test
+    public void whenGetFormById_shouldReturnForm() throws Exception {
+        mockMvc.perform(get("/forms/" + form.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(3)))
+                .andExpect(jsonPath("$.description", is(form.getDescription())));
     }
 }

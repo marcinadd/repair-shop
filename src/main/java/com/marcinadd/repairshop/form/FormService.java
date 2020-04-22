@@ -37,4 +37,8 @@ public class FormService {
     public List<Form> findAllForms() {
         return formRepository.findAll();
     }
+
+    public Form findFormById(Long id) {
+        return formRepository.findById(id).orElse(null);
+    }
 }
