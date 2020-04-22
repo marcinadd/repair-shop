@@ -19,8 +19,12 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Collections;
+
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -67,6 +71,8 @@ public class FormControllerTests {
         Mockito.when(formRepository.save(any(Form.class)))
                 .thenReturn(form);
 
+        Mockito.when(formRepository.findAll())
+                .thenReturn(Collections.singletonList(form));
     }
 
     @Test
@@ -78,5 +84,12 @@ public class FormControllerTests {
                 .content(new Gson().toJson(form)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(3)));
+    }
+
+    @Test
+    public void whenGetForms_shouldReturnFormList() throws Exception {
+        mockMvc.perform(get("/forms"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)));
     }
 }

@@ -21,8 +21,7 @@ import java.util.List;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -51,7 +50,11 @@ public class ClientControllerTests {
         Mockito.when(clientRepository.findAll())
                 .thenReturn(clients);
 
+        Mockito.when(clientRepository.findById(client.getId()))
+                .thenReturn(java.util.Optional.of(client));
         Mockito.when(clientRepository.save(any(Client.class))).thenReturn(client);
+        Mockito.when(clientRepository.findByLastNameStartingWithIgnoreCase("T"))
+                .thenReturn(Collections.singletonList(client));
     }
 
     @Test
@@ -75,4 +78,34 @@ public class ClientControllerTests {
                 .andExpect(jsonPath("$.id", is(1)));
     }
 
+    @Test
+    public void testLastNameStartsWith() throws Exception {
+        mockMvc.perform(get("/clients?lastNameStartsWith=T"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)));
+    }
+
+    @Test
+    public void testFindById() throws Exception {
+        mockMvc.perform(get("/clients/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(1)));
+    }
+
+    @Test
+    public void testUpdateClientData() throws Exception {
+        Client toUpdateInfo = Client.builder()
+                .id(1L)
+                .firstName("NewName")
+                .lastName("NewName")
+                .phone("+48123456789")
+                .email("newmail@example.com")
+                .repairables(null)
+                .build();
+        mockMvc.perform(patch("/clients/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new Gson().toJson(toUpdateInfo)))
+                .andExpect(status().isOk());
+
+    }
 }

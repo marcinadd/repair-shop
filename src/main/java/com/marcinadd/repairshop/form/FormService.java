@@ -6,6 +6,7 @@ import com.marcinadd.repairshop.repairable.Repairable;
 import com.marcinadd.repairshop.repairable.RepairableRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -31,5 +32,9 @@ public class FormService {
             return formRepository.save(form);
         }
         return null;
+    }
+
+    public List<Form> findAllForms() {
+        return formRepository.findAll();
     }
 }

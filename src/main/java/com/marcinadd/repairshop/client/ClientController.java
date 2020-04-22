@@ -25,4 +25,18 @@ public class ClientController {
         return clientService.getClients();
     }
 
+    @GetMapping(params = "lastNameStartsWith")
+    public List<Client> findClientsWithLastNameStartsWith(@RequestParam String lastNameStartsWith) {
+        return clientService.findClientsWhereLastNameStartsWith(lastNameStartsWith);
+    }
+
+    @GetMapping("{id}")
+    public Client findClientById(@PathVariable("id") Long id) {
+        return clientService.findById(id);
+    }
+
+    @PatchMapping("{id}")
+    public Client updateClient(@RequestBody Client client) {
+        return clientService.updateClient(client);
+    }
 }
