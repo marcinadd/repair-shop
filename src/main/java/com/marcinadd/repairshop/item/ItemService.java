@@ -9,6 +9,7 @@ import com.marcinadd.repairshop.item.buyable.ItemForm;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -41,5 +42,9 @@ public class ItemService {
             return item;
         }
         return null;
+    }
+
+    public List<Item> findAllItems() {
+        return itemRepository.findAll();
     }
 }
