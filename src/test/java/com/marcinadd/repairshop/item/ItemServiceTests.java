@@ -17,9 +17,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.transaction.Transactional;
+import java.math.BigDecimal;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.is;
 
 @ActiveProfiles("test")
 @RunWith(SpringRunner.class)
@@ -31,6 +32,8 @@ public class ItemServiceTests {
     @Autowired
     private BuyableRepository buyableRepository;
     @Autowired
+    private ItemRepository itemRepository;
+    @Autowired
     private ItemService itemService;
 
     private Form form;
@@ -41,10 +44,10 @@ public class ItemServiceTests {
         form = new Form();
         form = formRepository.save(form);
         buyable = new Service();
+        buyable.setPrice(new BigDecimal(3.0));
         buyable = buyableRepository.save(buyable);
     }
 
-    @SuppressWarnings("OptionalGetWithoutIsPresent")
     @Test
     @Transactional
     public void whenCreateItem_shouldAddItToForm() {
@@ -52,11 +55,19 @@ public class ItemServiceTests {
         itemForm.setBuyableId(buyable.getId());
         itemForm.setFormId(form.getId());
         itemForm.setQuantity(3);
-
         Item item = itemService.createItem(itemForm);
-        form = formRepository.findById(this.form.getId()).get();
-        assertThat(form.getItems(), contains(item));
-
+        assertThat(item.getForm(), is(form));
     }
 
+    @Test
+    public void whenDeleteItemWhichExists_shouldReturnTrue() {
+        Item item = new Item();
+        item = itemRepository.save(item);
+        assertThat(itemService.deleteItemById(item.getId()), is(true));
+    }
+
+    @Test
+    public void whenDeleteItemWhichNotExists_shouldReturnFalse() {
+        assertThat(itemService.deleteItemById(123456789L), is(false));
+    }
 }

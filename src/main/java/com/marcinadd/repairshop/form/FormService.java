@@ -2,12 +2,10 @@ package com.marcinadd.repairshop.form;
 
 import com.marcinadd.repairshop.client.Client;
 import com.marcinadd.repairshop.client.ClientRepository;
-import com.marcinadd.repairshop.item.Item;
 import com.marcinadd.repairshop.repairable.Repairable;
 import com.marcinadd.repairshop.repairable.RepairableRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,15 +42,4 @@ public class FormService {
         return formRepository.findById(id).orElse(null);
     }
 
-    public Form addItem(Form form, Item item) {
-        List<Item> currentItems = form.getItems();
-        if (currentItems == null) {
-            List<Item> items = new ArrayList<>();
-            items.add(item);
-            form.setItems(items);
-            return formRepository.save(form);
-        }
-        currentItems.add(item);
-        return formRepository.save(form);
-    }
 }

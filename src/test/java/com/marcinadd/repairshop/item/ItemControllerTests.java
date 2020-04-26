@@ -25,9 +25,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -75,6 +75,8 @@ public class ItemControllerTests {
                 .thenReturn(java.util.Optional.ofNullable(form));
         Mockito.when(itemRepository.save(any(Item.class)))
                 .thenReturn(item1);
+        Mockito.when(itemRepository.findById(item1.getId()))
+                .thenReturn(java.util.Optional.ofNullable(item1));
     }
 
     @Test
@@ -95,5 +97,12 @@ public class ItemControllerTests {
                 .content(new Gson().toJson(itemForm)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(item1.getId()));
+    }
+
+    @Test
+    public void whenDeleteItem_shouldReturnOk() throws Exception {
+        mockMvc.perform(delete("/items/" + item1.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", is(true)));
     }
 }

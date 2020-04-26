@@ -2,7 +2,6 @@ package com.marcinadd.repairshop.item;
 
 import com.marcinadd.repairshop.form.Form;
 import com.marcinadd.repairshop.form.FormRepository;
-import com.marcinadd.repairshop.form.FormService;
 import com.marcinadd.repairshop.item.buyable.Buyable;
 import com.marcinadd.repairshop.item.buyable.BuyableRepository;
 import com.marcinadd.repairshop.item.buyable.ItemForm;
@@ -17,13 +16,11 @@ public class ItemService {
     private final BuyableRepository buyableRepository;
     private final FormRepository formRepository;
     private final ItemRepository itemRepository;
-    private final FormService formService;
 
-    public ItemService(BuyableRepository buyableRepository, FormRepository formRepository, ItemRepository itemRepository, FormService formService) {
+    public ItemService(BuyableRepository buyableRepository, FormRepository formRepository, ItemRepository itemRepository) {
         this.buyableRepository = buyableRepository;
         this.formRepository = formRepository;
         this.itemRepository = itemRepository;
-        this.formService = formService;
     }
 
     @Transactional
@@ -32,19 +29,28 @@ public class ItemService {
         Optional<Form> optionalForm = formRepository.findById(itemForm.getFormId());
         if (optionalForm.isPresent() && optionalBuyable.isPresent()) {
             Buyable buyable = optionalBuyable.get();
+            Form form = optionalForm.get();
             Item item = Item.builder()
                     .buyable(buyable)
                     .itemPrice(buyable.getPrice())
                     .quantity(itemForm.getQuantity())
+                    .form(form)
                     .build();
-            item = itemRepository.save(item);
-            formService.addItem(optionalForm.get(), item);
-            return item;
+            return itemRepository.save(item);
         }
         return null;
     }
 
     public List<Item> findAllItems() {
         return itemRepository.findAll();
+    }
+
+    public boolean deleteItemById(Long id) {
+        Optional<Item> optionalItem = itemRepository.findById(id);
+        if (optionalItem.isPresent()) {
+            itemRepository.delete(optionalItem.get());
+            return true;
+        }
+        return false;
     }
 }

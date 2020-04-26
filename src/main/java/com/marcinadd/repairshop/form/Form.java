@@ -37,6 +37,6 @@ public class Form {
     private String description;
 
     private Status status;
-    @OneToMany
+    @OneToMany(mappedBy = "form", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Item> items;
 }
