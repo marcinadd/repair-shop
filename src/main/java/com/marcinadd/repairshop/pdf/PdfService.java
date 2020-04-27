@@ -5,6 +5,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 import com.marcinadd.repairshop.form.Form;
 import com.marcinadd.repairshop.form.FormRepository;
 import com.marcinadd.repairshop.pdf.generator.FormDetailsGenerator;
+import com.marcinadd.repairshop.pdf.generator.ItemListGenerator;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpHeaders;
@@ -20,13 +21,17 @@ import java.util.Optional;
 public class PdfService {
     private final MessageSource messageSource;
     private final FormRepository formRepository;
+    private final FormDetailsGenerator formDetailsGenerator;
+    private final ItemListGenerator itemListGenerator;
 
-    public PdfService(MessageSource messageSource, FormRepository formRepository) {
+    public PdfService(MessageSource messageSource, FormRepository formRepository, FormDetailsGenerator formDetailsGenerator, ItemListGenerator itemListGenerator) {
         this.messageSource = messageSource;
         this.formRepository = formRepository;
+        this.formDetailsGenerator = formDetailsGenerator;
+        this.itemListGenerator = itemListGenerator;
     }
 
-    public ResponseEntity<byte[]> createPdfFormSummary(Long formId) {
+    ResponseEntity<byte[]> createPdfFormSummary(Long formId) {
         Optional<Form> optionalForm = formRepository.findById(formId);
         if (optionalForm.isPresent()) {
             Form form = optionalForm.get();
@@ -60,7 +65,9 @@ public class PdfService {
         Chunk chunk = new Chunk(messageSource.getMessage("pdf.form.header", new Long[]{form.getId()}, LocaleContextHolder.getLocale()), font);
         document.add(chunk);
 
-        document.add(FormDetailsGenerator.formDetailsTableGenerator(form, messageSource));
+        document.add(formDetailsGenerator.getFormDetails(form, messageSource));
+        if (form.getItems() != null)
+            document.add(itemListGenerator.formItemListGenerator(form.getItems(), messageSource));
         document.close();
         return byteArrayOutputStream.toByteArray();
     }

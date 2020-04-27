@@ -9,13 +9,15 @@ import com.marcinadd.repairshop.form.Form;
 import com.marcinadd.repairshop.repairable.Repairable;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class FormDetailsGenerator {
 
-    private static List<TableRow> prepareData(Form form, MessageSource messageSource) {
+    private List<TableRow> prepareData(Form form, MessageSource messageSource) {
         Client client = form.getClient();
         Repairable repairable = form.getRepairable();
         List<TableRow> tableRows = new ArrayList<>();
@@ -46,7 +48,7 @@ public class FormDetailsGenerator {
         return tableRows;
     }
 
-    public static PdfPTable formDetailsTableGenerator(Form form, MessageSource messageSource) {
+    public PdfPTable getFormDetails(Form form, MessageSource messageSource) {
         PdfPTable table = new PdfPTable(2);
         List<TableRow> tableRows = prepareData(form, messageSource);
         tableRows.forEach(tableRow -> {
@@ -62,11 +64,11 @@ public class FormDetailsGenerator {
         return table;
     }
 
-    static class TableRow {
+    private static class TableRow {
         private String name;
         private String value;
 
-        public TableRow(String name, String value) {
+        TableRow(String name, String value) {
             this.name = name;
             this.value = value;
         }
