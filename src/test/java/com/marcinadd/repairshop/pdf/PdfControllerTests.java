@@ -43,7 +43,7 @@ public class PdfControllerTests {
 
     @Test
     public void whenGetFormSummaryPdf_shouldReturnOk() throws Exception {
-        mockMvc.perform(get("/pdf/forms/" + form.getId()))
+        mockMvc.perform(get("/pdf/forms/1" + form.getId()))
                 .andExpect(status().isOk());
     }
 

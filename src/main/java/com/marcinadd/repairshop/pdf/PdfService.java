@@ -4,6 +4,7 @@ import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.marcinadd.repairshop.form.Form;
 import com.marcinadd.repairshop.form.FormRepository;
+import com.marcinadd.repairshop.pdf.generator.FormDetailsGenerator;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpHeaders;
@@ -55,10 +56,13 @@ public class PdfService {
         PdfWriter.getInstance(document, byteArrayOutputStream);
         document.open();
 
-        Font font = FontFactory.getFont(FontFactory.TIMES_BOLD, 16, BaseColor.BLACK);
+        Font font = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 20, BaseColor.BLACK);
         Chunk chunk = new Chunk(messageSource.getMessage("pdf.form.header", new Long[]{form.getId()}, LocaleContextHolder.getLocale()), font);
         document.add(chunk);
+
+        document.add(FormDetailsGenerator.formDetailsTableGenerator(form, messageSource));
         document.close();
         return byteArrayOutputStream.toByteArray();
     }
+
 }
