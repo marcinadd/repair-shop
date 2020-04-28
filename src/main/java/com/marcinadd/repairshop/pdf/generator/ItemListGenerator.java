@@ -68,6 +68,15 @@ public class ItemListGenerator {
         return table;
     }
 
+    public BigDecimal countTotalPrice(List<Item> items) {
+        final BigDecimal[] sum = {new BigDecimal(0)};
+        items.forEach(item -> {
+            BigDecimal itemTotalPrice = item.getItemPrice().multiply(new BigDecimal(item.getQuantity()));
+            sum[0] = sum[0].add(itemTotalPrice);
+        });
+        return sum[0];
+    }
+
     private static class TableRow {
         private String name;
         private BigDecimal itemPrice;

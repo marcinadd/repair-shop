@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
+import java.math.BigDecimal;
 import java.util.Optional;
 
 @Service
@@ -60,16 +61,25 @@ public class PdfService {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         PdfWriter.getInstance(document, byteArrayOutputStream);
         document.open();
+        Font fontH1 = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 20, BaseColor.BLACK);
+        Font fontH2 = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16, BaseColor.BLACK);
+        Font fontH3 = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14, BaseColor.BLACK);
 
-        Font font = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 20, BaseColor.BLACK);
-        Chunk chunk = new Chunk(messageSource.getMessage("pdf.form.header", new Long[]{form.getId()}, LocaleContextHolder.getLocale()), font);
-        document.add(chunk);
+        document.add(new Paragraph(messageSource.getMessage("pdf.form.header", new Long[]{form.getId()}, LocaleContextHolder.getLocale()), fontH1));
 
+        document.add(new Paragraph(messageSource.getMessage("pdf.form.details", null, LocaleContextHolder.getLocale()), fontH2));
+        document.add(Chunk.NEWLINE);
         document.add(formDetailsGenerator.getFormDetails(form, messageSource));
-        if (form.getItems() != null)
+
+        if (form.getItems() != null) {
+            document.add(new Paragraph(messageSource.getMessage("pdf.form.items", null, LocaleContextHolder.getLocale()), fontH2));
+            document.add(Chunk.NEWLINE);
             document.add(itemListGenerator.formItemListGenerator(form.getItems(), messageSource));
+            BigDecimal totalPrice = itemListGenerator.countTotalPrice(form.getItems());
+            document.add(new Chunk(messageSource.getMessage("pdf.form.sum", null, LocaleContextHolder.getLocale()) + " ", fontH2));
+            document.add(new Chunk(String.valueOf(totalPrice), fontH3));
+        }
         document.close();
         return byteArrayOutputStream.toByteArray();
     }
-
 }
