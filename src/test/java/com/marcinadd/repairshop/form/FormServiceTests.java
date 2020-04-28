@@ -16,6 +16,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 
 @ActiveProfiles("test")
 @RunWith(SpringRunner.class)
@@ -57,6 +58,16 @@ public class FormServiceTests {
         form = formService.createForm(form);
         assertThat(form.getClient(), equalTo(owner));
         assertThat(form.getRepairable(), equalTo(repairable));
+    }
+
+    @Test
+    public void whenPatchStatus_shouldReturnFormWithPatchedStatus() {
+        Form form = Form.builder().status(Status.TO_DO).build();
+        form = formRepository.save(form);
+
+        Form patched = Form.builder().status(Status.COMPLETED).build();
+        Form form1 = formService.patchFormById(form.getId(), patched);
+        assertThat(form1.getStatus(), is(patched.getStatus()));
     }
 
 }

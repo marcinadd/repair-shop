@@ -38,5 +38,6 @@ public class Form {
 
     private Status status;
     @OneToMany(mappedBy = "form", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private List<Item> items;
 }
