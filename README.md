@@ -29,7 +29,7 @@ This REST API has corresponding front-end based on Angular. You can find it here
 1. Build the app, run it and enjoy
 
 ## Prerequisites
-* JRE ≥ 1.8
+* JRE ≥ 11
 * MySQL 8.0 compatible database
 
 ## License
