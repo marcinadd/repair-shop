@@ -24,8 +24,7 @@ import java.util.Collections;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -101,6 +100,17 @@ public class FormControllerTests {
     @Test
     public void whenGetFormById_shouldReturnForm() throws Exception {
         mockMvc.perform(get("/forms/" + form.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(3)))
+                .andExpect(jsonPath("$.description", is(form.getDescription())));
+    }
+
+    @Test
+    public void whenPatchStatus_shouldReturnOk() throws Exception {
+        Form patched = Form.builder().status(Status.COMPLETED).build();
+        mockMvc.perform(patch("/forms/" + form.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new Gson().toJson(patched)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(3)))
                 .andExpect(jsonPath("$.description", is(form.getDescription())));

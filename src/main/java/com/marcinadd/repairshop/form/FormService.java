@@ -41,4 +41,16 @@ public class FormService {
     public Form findFormById(Long id) {
         return formRepository.findById(id).orElse(null);
     }
+
+    public Form patchFormById(Long formId, Form patchedValues) {
+        Optional<Form> optionalForm = formRepository.findById(formId);
+        if (optionalForm.isPresent()) {
+            Form form = optionalForm.get();
+            if (patchedValues.getStatus() != null)
+                form.setStatus(patchedValues.getStatus());
+            return formRepository.save(form);
+        }
+        return null;
+    }
+
 }
