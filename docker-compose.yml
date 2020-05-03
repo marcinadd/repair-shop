@@ -24,8 +24,40 @@ services:
     volumes:
       - db-data:/var/lib/mysql
 
+  #  Keycloak
+  keycloak-db:
+    image: mysql:8
+    volumes:
+      - keycloack-db:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: keycloak
+      MYSQL_USER: keycloak
+      MYSQL_PASSWORD: password
+    ports:
+      - 3307:33060
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    volumes:
+      - ./config/keycloak.json:/tmp/config/keycloak.json
+    environment:
+      DB_VENDOR: MYSQL
+      DB_ADDR: keycloak-db
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_PASSWORD: password
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
+      KEYCLOAK_IMPORT: '/tmp/config/keycloak.json -Dkeycloak.profile.feature.upload_scripts=enabled'
+    ports:
+      - 8081:8080
+    depends_on:
+      - keycloak-db
+
 networks:
   repair-shop-network:
 
 volumes:
   db-data:
+  keycloak-db:
