@@ -11,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -21,6 +22,7 @@ import java.util.List;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -58,6 +60,7 @@ public class ClientControllerTests {
     }
 
     @Test
+    @WithMockUser
     public void testGetAllClients() throws Exception {
         mockMvc.perform(get("/clients"))
                 .andExpect(status().isOk())
@@ -65,13 +68,14 @@ public class ClientControllerTests {
     }
 
     @Test
+    @WithMockUser
     public void testCreateClient() throws Exception {
         Client test = Client.builder()
                 .firstName("Sample")
                 .lastName("Sample2")
                 .build();
 
-        mockMvc.perform(post("/clients")
+        mockMvc.perform(post("/clients").with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new Gson().toJson(test)))
                 .andExpect(status().isOk())
@@ -79,6 +83,7 @@ public class ClientControllerTests {
     }
 
     @Test
+    @WithMockUser
     public void testLastNameStartsWith() throws Exception {
         mockMvc.perform(get("/clients?lastNameStartsWith=T"))
                 .andExpect(status().isOk())
@@ -86,6 +91,7 @@ public class ClientControllerTests {
     }
 
     @Test
+    @WithMockUser
     public void testFindById() throws Exception {
         mockMvc.perform(get("/clients/1"))
                 .andExpect(status().isOk())
@@ -93,6 +99,7 @@ public class ClientControllerTests {
     }
 
     @Test
+    @WithMockUser
     public void testUpdateClientData() throws Exception {
         Client toUpdateInfo = Client.builder()
                 .id(1L)
@@ -102,7 +109,7 @@ public class ClientControllerTests {
                 .email("newmail@example.com")
                 .repairables(null)
                 .build();
-        mockMvc.perform(patch("/clients/1")
+        mockMvc.perform(patch("/clients/1").with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new Gson().toJson(toUpdateInfo)))
                 .andExpect(status().isOk());

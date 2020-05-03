@@ -15,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -24,6 +25,7 @@ import java.util.Collections;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -80,10 +82,11 @@ public class FormControllerTests {
     }
 
     @Test
+    @WithMockUser
     public void whenCreateForm_shouldReturnForm() throws Exception {
         Form form = Form.builder().repairableId(repairable.getId()).clientId(client.getId()).build();
 
-        mockMvc.perform(post("/forms")
+        mockMvc.perform(post("/forms").with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new Gson().toJson(form)))
                 .andExpect(status().isOk())
@@ -91,6 +94,7 @@ public class FormControllerTests {
     }
 
     @Test
+    @WithMockUser
     public void whenGetForms_shouldReturnFormList() throws Exception {
         mockMvc.perform(get("/forms"))
                 .andExpect(status().isOk())
@@ -98,6 +102,7 @@ public class FormControllerTests {
     }
 
     @Test
+    @WithMockUser
     public void whenGetFormById_shouldReturnForm() throws Exception {
         mockMvc.perform(get("/forms/" + form.getId()))
                 .andExpect(status().isOk())
@@ -106,9 +111,10 @@ public class FormControllerTests {
     }
 
     @Test
+    @WithMockUser
     public void whenPatchStatus_shouldReturnOk() throws Exception {
         Form patched = Form.builder().status(Status.COMPLETED).build();
-        mockMvc.perform(patch("/forms/" + form.getId())
+        mockMvc.perform(patch("/forms/" + form.getId()).with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new Gson().toJson(patched)))
                 .andExpect(status().isOk())
