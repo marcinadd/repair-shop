@@ -28,7 +28,7 @@ services:
   keycloak-db:
     image: mysql:8
     volumes:
-      - keycloack-db:/var/lib/mysql
+      - keycloak-db:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: keycloak
