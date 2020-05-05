@@ -34,10 +34,10 @@ public class ClientService {
         Optional<Client> toUpdateOptionalClient = clientRepository.findById(client.getId());
         if (toUpdateOptionalClient.isPresent()) {
             Client toUpdateClient = toUpdateOptionalClient.get();
-            toUpdateClient.setFirstName(client.getFirstName());
-            toUpdateClient.setLastName(client.getLastName());
-            toUpdateClient.setEmail(client.getEmail());
-            toUpdateClient.setPhone(client.getPhone());
+            if (!client.getFirstName().isBlank()) toUpdateClient.setFirstName(client.getFirstName());
+            if (!client.getLastName().isBlank()) toUpdateClient.setLastName(client.getLastName());
+            if (!client.getEmail().isBlank()) toUpdateClient.setEmail(client.getEmail());
+            if (!client.getPhone().isBlank()) toUpdateClient.setPhone(client.getPhone());
             return clientRepository.save(toUpdateClient);
         }
         return null;

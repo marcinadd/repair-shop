@@ -6,6 +6,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.marcinadd.repairshop.item.Item;
+import com.marcinadd.repairshop.pdf.CurrencyService;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,12 @@ import java.util.stream.Stream;
 
 @Component
 public class ItemListGenerator {
+    private final CurrencyService currencyService;
+
+    public ItemListGenerator(CurrencyService currencyService) {
+        this.currencyService = currencyService;
+    }
+
     private void addTableHeader(PdfPTable table, MessageSource messageSource) {
         Stream.of(
                 messageSource.getMessage("pdf.form.name", null, LocaleContextHolder.getLocale()),
@@ -55,9 +62,9 @@ public class ItemListGenerator {
         List<TableRow> tableRows = prepareData(items);
         tableRows.forEach(tableRow -> {
             addTableCell(table, tableRow.name);
-            addTableCell(table, tableRow.itemPrice);
+            addTableCell(table, currencyService.formatBigDecimal(tableRow.itemPrice));
             addTableCell(table, tableRow.quantity);
-            addTableCell(table, tableRow.totalPrice);
+            addTableCell(table, currencyService.formatBigDecimal(tableRow.totalPrice));
         });
     }
 

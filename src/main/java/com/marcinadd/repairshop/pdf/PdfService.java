@@ -24,12 +24,14 @@ public class PdfService {
     private final FormRepository formRepository;
     private final FormDetailsGenerator formDetailsGenerator;
     private final ItemListGenerator itemListGenerator;
+    private final CurrencyService currencyService;
 
-    public PdfService(MessageSource messageSource, FormRepository formRepository, FormDetailsGenerator formDetailsGenerator, ItemListGenerator itemListGenerator) {
+    public PdfService(MessageSource messageSource, FormRepository formRepository, FormDetailsGenerator formDetailsGenerator, ItemListGenerator itemListGenerator, CurrencyService currencyService) {
         this.messageSource = messageSource;
         this.formRepository = formRepository;
         this.formDetailsGenerator = formDetailsGenerator;
         this.itemListGenerator = itemListGenerator;
+        this.currencyService = currencyService;
     }
 
     ResponseEntity<byte[]> createPdfFormSummary(Long formId) {
@@ -77,7 +79,7 @@ public class PdfService {
             document.add(itemListGenerator.formItemListGenerator(form.getItems(), messageSource));
             BigDecimal totalPrice = itemListGenerator.countTotalPrice(form.getItems());
             document.add(new Chunk(messageSource.getMessage("pdf.form.sum", null, LocaleContextHolder.getLocale()) + " ", fontH2));
-            document.add(new Chunk(String.valueOf(totalPrice), fontH3));
+            document.add(new Chunk(currencyService.formatBigDecimal(totalPrice), fontH3));
         }
         document.close();
         return byteArrayOutputStream.toByteArray();
