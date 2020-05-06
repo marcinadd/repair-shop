@@ -30,8 +30,8 @@ public class ClientService {
         return clientRepository.findById(id).orElse(null);
     }
 
-    public Client updateClient(Client client) {
-        Optional<Client> toUpdateOptionalClient = clientRepository.findById(client.getId());
+    public Client updateClient(Long clientId, Client client) {
+        Optional<Client> toUpdateOptionalClient = clientRepository.findById(clientId);
         if (toUpdateOptionalClient.isPresent()) {
             Client toUpdateClient = toUpdateOptionalClient.get();
             if (!client.getFirstName().isBlank()) toUpdateClient.setFirstName(client.getFirstName());

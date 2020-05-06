@@ -63,7 +63,7 @@ public class ClientServiceTests {
                 .email("newmail@example.com")
                 .repairables(null)
                 .build();
-        Client updatedClient = clientService.updateClient(toUpdateInfo);
+        Client updatedClient = clientService.updateClient(toUpdateInfo.getId(), toUpdateInfo);
         assertThat(updatedClient.getFirstName(), is(toUpdateInfo.getFirstName()));
         assertThat(updatedClient.getLastName(), is(toUpdateInfo.getLastName()));
         assertThat(updatedClient.getPhone(), is(toUpdateInfo.getPhone()));
