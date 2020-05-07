@@ -11,4 +11,5 @@ import javax.persistence.Entity;
 @Setter
 public class Part extends Buyable {
     private int inStockQuantity;
+    private boolean unlimited;
 }
