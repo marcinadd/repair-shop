@@ -3,9 +3,10 @@ package com.marcinadd.repairshop.item;
 import com.marcinadd.repairshop.RepairShopApplication;
 import com.marcinadd.repairshop.form.Form;
 import com.marcinadd.repairshop.form.FormRepository;
-import com.marcinadd.repairshop.item.buyable.Buyable;
 import com.marcinadd.repairshop.item.buyable.BuyableRepository;
 import com.marcinadd.repairshop.item.buyable.ItemForm;
+import com.marcinadd.repairshop.item.buyable.part.NotEnoughPartsInStockException;
+import com.marcinadd.repairshop.item.buyable.part.Part;
 import com.marcinadd.repairshop.item.buyable.service.Service;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,22 +38,27 @@ public class ItemServiceTests {
     private ItemService itemService;
 
     private Form form;
-    private Buyable buyable;
+    private Service service;
+    private Part part;
 
     @Before
     public void init() {
         form = new Form();
         form = formRepository.save(form);
-        buyable = new Service();
-        buyable.setPrice(new BigDecimal(3.0));
-        buyable = buyableRepository.save(buyable);
+        service = new Service();
+        service.setPrice(new BigDecimal(3.0));
+        service = buyableRepository.save(service);
+        part = new Part();
+        part.setPrice(new BigDecimal(4.5));
+        part.setInStockQuantity(4);
+        part = buyableRepository.save(part);
     }
 
     @Test
     @Transactional
-    public void whenCreateItem_shouldAddItToForm() {
+    public void whenCreateItemWithService_shouldAddItToForm() throws NotEnoughPartsInStockException {
         ItemForm itemForm = new ItemForm();
-        itemForm.setBuyableId(buyable.getId());
+        itemForm.setBuyableId(service.getId());
         itemForm.setFormId(form.getId());
         itemForm.setQuantity(3);
         Item item = itemService.createItem(itemForm);
@@ -69,5 +75,27 @@ public class ItemServiceTests {
     @Test
     public void whenDeleteItemWhichNotExists_shouldReturnFalse() {
         assertThat(itemService.deleteItemById(123456789L), is(false));
+    }
+
+    @Test
+    public void whenCreateItemWithPartWithQuantityInStock_shouldCreateItemAndDecrementQuantity() throws NotEnoughPartsInStockException {
+        Integer currentPartQuantity = part.getInStockQuantity();
+        Integer formQuantity = 3;
+        ItemForm itemForm = new ItemForm();
+        itemForm.setBuyableId(part.getId());
+        itemForm.setFormId(form.getId());
+        itemForm.setQuantity(formQuantity);
+        Item item = itemService.createItem(itemForm);
+        assertThat(((Part) item.getBuyable()).getInStockQuantity(), is(currentPartQuantity - formQuantity));
+    }
+
+    @Test(expected = NotEnoughPartsInStockException.class)
+    public void whenCreateItemWithPartWithQuantityOutOfStock_shouldThrowException() throws NotEnoughPartsInStockException {
+        Integer formQuantity = 99999999;
+        ItemForm itemForm = new ItemForm();
+        itemForm.setBuyableId(part.getId());
+        itemForm.setFormId(form.getId());
+        itemForm.setQuantity(formQuantity);
+        itemService.createItem(itemForm);
     }
 }

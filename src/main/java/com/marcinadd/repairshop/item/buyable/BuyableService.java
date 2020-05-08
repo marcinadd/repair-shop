@@ -11,9 +11,7 @@ public class BuyableService {
     public BuyableService(BuyableRepository buyableRepository) {
         this.buyableRepository = buyableRepository;
     }
-
-
     public List<Buyable> findAll() {
-        return buyableRepository.findAll();
+        return buyableRepository.findByDeletedIsFalse();
     }
 }

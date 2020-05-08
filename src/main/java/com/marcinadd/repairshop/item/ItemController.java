@@ -1,7 +1,10 @@
 package com.marcinadd.repairshop.item;
 
 import com.marcinadd.repairshop.item.buyable.ItemForm;
+import com.marcinadd.repairshop.item.buyable.part.NotEnoughPartsInStockException;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -18,7 +21,11 @@ public class ItemController {
 
     @PostMapping
     public Item createItem(@RequestBody @Valid ItemForm itemForm) {
-        return itemService.createItem(itemForm);
+        try {
+            return itemService.createItem(itemForm);
+        } catch (NotEnoughPartsInStockException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not enough parts", e);
+        }
     }
 
     @GetMapping
