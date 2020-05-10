@@ -2,6 +2,7 @@ package com.marcinadd.repairshop.item.buyable.service;
 
 import com.google.gson.Gson;
 import com.marcinadd.repairshop.RepairShopApplication;
+import com.marcinadd.repairshop.item.buyable.BuyableRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,6 +40,9 @@ public class ServiceControllerTests {
     @MockBean
     private ServiceRepository serviceRepository;
 
+    @MockBean
+    private BuyableRepository buyableRepository;
+
     private Service service;
 
     @Before
@@ -54,7 +58,7 @@ public class ServiceControllerTests {
         Mockito.when(serviceRepository.findAll())
                 .thenReturn(services);
 
-        Mockito.when(serviceRepository.findById(service.getId()))
+        Mockito.when(buyableRepository.findById(service.getId()))
                 .thenReturn(java.util.Optional.ofNullable(service));
     }
 

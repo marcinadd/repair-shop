@@ -2,6 +2,7 @@ package com.marcinadd.repairshop.item.buyable.part;
 
 import com.google.gson.Gson;
 import com.marcinadd.repairshop.RepairShopApplication;
+import com.marcinadd.repairshop.item.buyable.BuyableRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,14 +17,15 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -38,6 +40,9 @@ public class PartControllerTests {
 
     @MockBean
     private PartRepository partRepository;
+
+    @MockBean
+    private BuyableRepository buyableRepository;
 
     private Part part;
 
@@ -55,6 +60,9 @@ public class PartControllerTests {
                 .thenReturn(parts);
 
         Mockito.when(partRepository.findById(part.getId()))
+                .thenReturn(java.util.Optional.ofNullable(part));
+
+        Mockito.when(buyableRepository.findById(part.getId()))
                 .thenReturn(java.util.Optional.ofNullable(part));
     }
 
@@ -76,4 +84,25 @@ public class PartControllerTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)));
     }
+
+    @Test
+    @WithMockUser
+    public void whenUpdatePart_shouldReturnPart() throws Exception {
+        Part updatedPart = new Part();
+        part.setPrice(new BigDecimal("3.35"));
+        mockMvc.perform(patch("/parts/" + part.getId()).with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new Gson().toJson(updatedPart)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(part.getId()));
+    }
+
+    @Test
+    @WithMockUser
+    public void whenGetDeletePart_shouldReturnTrue() throws Exception {
+        mockMvc.perform(delete("/parts/" + part.getId()).with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", is(true)));
+    }
+
 }

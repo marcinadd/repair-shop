@@ -23,4 +23,14 @@ public class PartController {
     public List<Part> getParts() {
         return partService.getParts();
     }
+
+    @PatchMapping("{id}")
+    public Part updatePart(@PathVariable Long id, @RequestBody Part part) {
+        return partService.updatePart(id, part);
+    }
+
+    @DeleteMapping("{id}")
+    public boolean deletePart(@PathVariable Long id) {
+        return partService.deletePart(id);
+    }
 }
