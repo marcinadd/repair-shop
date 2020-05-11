@@ -13,6 +13,6 @@ public class NotEnoughPartsInStockException extends Exception {
 
 
     public String toString() {
-        return String.format("No enough parts in stock expected %d %ss but get %d", expected, partName, inStock);
+        return String.format("Not enough parts in stock expected %d %ss but get %d", expected, partName, inStock);
     }
 }

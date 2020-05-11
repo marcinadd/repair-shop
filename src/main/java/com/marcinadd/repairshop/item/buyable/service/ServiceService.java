@@ -20,7 +20,7 @@ public class ServiceService {
     }
 
     public List<Service> getServices() {
-        return serviceRepository.findAll();
+        return serviceRepository.findByDeletedIsFalse();
     }
 
     public Service updateService(Long serviceId, Service toUpdateService) {

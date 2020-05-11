@@ -21,7 +21,7 @@ public class PartService {
     }
 
     public List<Part> getParts() {
-        return partRepository.findAll();
+        return partRepository.findByDeletedIsFalse();
     }
 
     /**
@@ -47,7 +47,7 @@ public class PartService {
             if (updatedValues.getPrice() != null) {
                 part.setPrice(updatedValues.getPrice());
             }
-            return part;
+            return partRepository.save(part);
         }
         return null;
     }

@@ -55,7 +55,7 @@ public class ServiceControllerTests {
         List<Service> services = new ArrayList<>();
         services.add(new Service());
         services.add(new Service());
-        Mockito.when(serviceRepository.findAll())
+        Mockito.when(serviceRepository.findByDeletedIsFalse())
                 .thenReturn(services);
 
         Mockito.when(buyableRepository.findById(service.getId()))

@@ -56,7 +56,7 @@ public class PartControllerTests {
         List<Part> parts = new ArrayList<>();
         parts.add(new Part());
         parts.add(new Part());
-        Mockito.when(partRepository.findAll())
+        Mockito.when(partRepository.findByDeletedIsFalse())
                 .thenReturn(parts);
 
         Mockito.when(partRepository.findById(part.getId()))
