@@ -1,5 +1,7 @@
 package com.marcinadd.repairshop.form;
 
+import com.marcinadd.repairshop.form.auth.FormAuthService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -9,9 +11,11 @@ import java.util.List;
 @CrossOrigin("*")
 public class FormController {
     private final FormService formService;
+    private final FormAuthService formAuthService;
 
-    public FormController(FormService formService) {
+    public FormController(FormService formService, FormAuthService formAuthService) {
         this.formService = formService;
+        this.formAuthService = formAuthService;
     }
 
     @PostMapping
@@ -32,5 +36,10 @@ public class FormController {
     @PatchMapping("{id}")
     public Form patchForm(@PathVariable("id") Long id, @RequestBody Form form) {
         return formService.patchFormById(id, form);
+    }
+
+    @GetMapping("{formId}/regenerateClientPasswordToPdf")
+    public ResponseEntity<byte[]> regeneratePasswordAndSaveAsPdf(@PathVariable("formId") Long formId) {
+        return formAuthService.regeneratePasswordForFormSaveToPdf(formId);
     }
 }

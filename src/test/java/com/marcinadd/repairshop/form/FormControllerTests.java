@@ -121,4 +121,12 @@ public class FormControllerTests {
                 .andExpect(jsonPath("$.id", is(3)))
                 .andExpect(jsonPath("$.description", is(form.getDescription())));
     }
+
+    @Test
+    @WithMockUser
+    public void whenRegeneratePassword_shouldReturnFormList() throws Exception {
+        mockMvc.perform(get("/forms/" + form.getId() + "/regenerateClientPasswordToPdf"))
+                .andExpect(status().isOk());
+    }
+
 }

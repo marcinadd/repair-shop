@@ -1,5 +1,6 @@
 package com.marcinadd.repairshop.form;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.marcinadd.repairshop.client.Client;
 import com.marcinadd.repairshop.item.Item;
@@ -40,4 +41,7 @@ public class Form {
     @OneToMany(mappedBy = "form", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private List<Item> items;
+
+    @JsonIgnore
+    private String password;
 }

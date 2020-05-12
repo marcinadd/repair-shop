@@ -50,6 +50,17 @@ public class PdfService {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    public ResponseEntity<byte[]> createPdfFormPassword(Form form, String password) {
+        HttpHeaders headers = createHttpHeadersForPdf(form.getId() + "-password.pdf");
+        try {
+            byte[] file = generateClientFormPasswordPdfDocument(form, password);
+            return new ResponseEntity<>(file, headers, HttpStatus.OK);
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     private HttpHeaders createHttpHeadersForPdf(String filename) {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_PDF);
@@ -81,6 +92,28 @@ public class PdfService {
             document.add(new Chunk(messageSource.getMessage("pdf.form.sum", null, LocaleContextHolder.getLocale()) + " ", fontH2));
             document.add(new Chunk(currencyService.formatBigDecimal(totalPrice), fontH3));
         }
+        document.close();
+        return byteArrayOutputStream.toByteArray();
+    }
+
+    private byte[] generateClientFormPasswordPdfDocument(Form form, String password) throws DocumentException {
+        Document document = new Document();
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        PdfWriter.getInstance(document, byteArrayOutputStream);
+        document.open();
+        Font fontH1 = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 26, BaseColor.BLACK);
+        Font fontH2 = FontFactory.getFont(FontFactory.HELVETICA, 24, BaseColor.BLACK);
+        Font fontBold = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 20, BaseColor.BLACK);
+        Font font = FontFactory.getFont(FontFactory.HELVETICA, 20, BaseColor.BLACK);
+
+        document.add(new Paragraph(messageSource.getMessage("pdf.form.password.h1", null, LocaleContextHolder.getLocale()), fontH1));
+        document.add(new Paragraph(messageSource.getMessage("pdf.form.password.message", null, LocaleContextHolder.getLocale()), fontH2));
+        document.add(new Paragraph(Chunk.NEWLINE));
+        document.add(new Chunk(messageSource.getMessage("pdf.form.password.id", null, LocaleContextHolder.getLocale()) + " ", fontBold));
+        document.add(new Chunk(String.valueOf(form.getId()), font));
+        document.add(new Paragraph(Chunk.NEWLINE));
+        document.add(new Chunk(messageSource.getMessage("pdf.form.password.password", null, LocaleContextHolder.getLocale()) + " ", fontBold));
+        document.add(new Chunk(String.valueOf(password), font));
         document.close();
         return byteArrayOutputStream.toByteArray();
     }
