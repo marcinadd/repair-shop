@@ -1,8 +1,10 @@
 package com.marcinadd.repairshop.form;
 
 import com.marcinadd.repairshop.form.auth.FormAuthService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -45,6 +47,10 @@ public class FormController {
 
     @PostMapping("{formId}/info")
     public Form checkFormInfo(@PathVariable Long formId, @RequestBody String password) {
-        return formAuthService.getFormInfo(formId, password);
+        Form form = formAuthService.getFormInfo(formId, password);
+        if (form != null) {
+            return form;
+        }
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
     }
 }

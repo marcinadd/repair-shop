@@ -4,11 +4,9 @@ import com.marcinadd.repairshop.form.Form;
 import com.marcinadd.repairshop.form.FormRepository;
 import com.marcinadd.repairshop.form.FormService;
 import com.marcinadd.repairshop.pdf.PdfService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 import java.util.Random;
@@ -60,10 +58,9 @@ public class FormAuthService {
         if (optionalForm.isPresent()) {
             Form form = optionalForm.get();
             if (passwordEncoder.matches(password, form.getPassword())) {
-                return formService.hideSecretDataForForm(form);
+                return formService.hidePersonalDataInForm(form);
             }
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        return null;
     }
 }

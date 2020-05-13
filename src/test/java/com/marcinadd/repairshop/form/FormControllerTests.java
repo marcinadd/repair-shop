@@ -159,9 +159,9 @@ public class FormControllerTests {
 
     @Test
     @WithMockUser
-    public void whenGetFormInfoWhichNotExists_shouldReturnNotFound() throws Exception {
+    public void whenGetFormInfoWhichNotExists_shouldReturnUnauthorized() throws Exception {
         mockMvc.perform(post("/forms/" + form.getId() + 1 + "/info").with(csrf())
                 .content(rawPassword))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isUnauthorized());
     }
 }
