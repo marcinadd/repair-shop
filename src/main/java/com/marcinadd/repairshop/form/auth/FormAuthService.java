@@ -2,10 +2,13 @@ package com.marcinadd.repairshop.form.auth;
 
 import com.marcinadd.repairshop.form.Form;
 import com.marcinadd.repairshop.form.FormRepository;
+import com.marcinadd.repairshop.form.FormService;
 import com.marcinadd.repairshop.pdf.PdfService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 import java.util.Random;
@@ -16,11 +19,13 @@ import static com.marcinadd.repairshop.form.auth.FormAuthConfig.PASSWORD_LENGTH;
 public class FormAuthService {
     private final PasswordEncoder passwordEncoder;
     private final FormRepository formRepository;
+    private final FormService formService;
     private final PdfService pdfService;
 
-    public FormAuthService(PasswordEncoder passwordEncoder, FormRepository formRepository, PdfService pdfService) {
+    public FormAuthService(PasswordEncoder passwordEncoder, FormRepository formRepository, FormService formService, PdfService pdfService) {
         this.passwordEncoder = passwordEncoder;
         this.formRepository = formRepository;
+        this.formService = formService;
         this.pdfService = pdfService;
     }
 
@@ -48,5 +53,17 @@ public class FormAuthService {
             return pdfService.createPdfFormPassword(form, password);
         }
         return null;
+    }
+
+    public Form getFormInfo(Long formId, String password) {
+        Optional<Form> optionalForm = formRepository.findById(formId);
+        if (optionalForm.isPresent()) {
+            Form form = optionalForm.get();
+            if (passwordEncoder.matches(password, form.getPassword())) {
+                return formService.hideSecretDataForForm(form);
+            }
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
 }

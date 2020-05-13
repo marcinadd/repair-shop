@@ -42,4 +42,9 @@ public class FormController {
     public ResponseEntity<byte[]> regeneratePasswordAndSaveAsPdf(@PathVariable("formId") Long formId) {
         return formAuthService.regeneratePasswordForFormSaveToPdf(formId);
     }
+
+    @PostMapping("{formId}/info")
+    public Form checkFormInfo(@PathVariable Long formId, @RequestBody String password) {
+        return formAuthService.getFormInfo(formId, password);
+    }
 }

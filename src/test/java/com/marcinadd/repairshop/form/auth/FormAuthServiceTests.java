@@ -11,6 +11,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.ArrayList;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -38,10 +40,19 @@ public class FormAuthServiceTests {
     @SuppressWarnings("OptionalGetWithoutIsPresent")
     @Test
     public void whenSavePasswordTo() {
-        Form form = new Form();
+        Form form = Form.builder().items(new ArrayList<>()).build();
         form = formRepository.save(form);
         String rawPassword = formAuthService.generateClientPasswordForForm(form);
         String encodedPassword = formRepository.findById(form.getId()).get().getPassword();
         assertTrue(passwordEncoder.matches(rawPassword, encodedPassword));
+    }
+
+    @Test
+    public void whenGetFormInfo_shouldReturnFormInfo() {
+        Form form = Form.builder().items(new ArrayList<>()).build();
+        form = formRepository.save(form);
+        String rawPassword = formAuthService.generateClientPasswordForForm(form);
+        Form formInfo = formAuthService.getFormInfo(form.getId(), rawPassword);
+        assertThat(formInfo.getId(), is(form.getId()));
     }
 }

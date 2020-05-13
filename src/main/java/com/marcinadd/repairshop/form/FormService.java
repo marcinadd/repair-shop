@@ -53,4 +53,8 @@ public class FormService {
         return null;
     }
 
+    public Form hideSecretDataForForm(Form form) {
+//        TODO Hide sensitive data here
+        return form;
+    }
 }
