@@ -6,9 +6,12 @@ import com.marcinadd.repairshop.client.Client;
 import com.marcinadd.repairshop.item.Item;
 import com.marcinadd.repairshop.repairable.Repairable;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -44,4 +47,20 @@ public class Form {
 
     @JsonIgnore
     private String password;
+
+    @CreatedDate
+    private Date createdDate;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Form form = (Form) o;
+        return Objects.equals(getId(), form.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
+    }
 }

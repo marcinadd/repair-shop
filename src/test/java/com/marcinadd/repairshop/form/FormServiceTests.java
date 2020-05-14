@@ -3,7 +3,6 @@ package com.marcinadd.repairshop.form;
 import com.marcinadd.repairshop.RepairShopApplication;
 import com.marcinadd.repairshop.client.Client;
 import com.marcinadd.repairshop.client.ClientRepository;
-import com.marcinadd.repairshop.item.ItemRepository;
 import com.marcinadd.repairshop.repairable.Repairable;
 import com.marcinadd.repairshop.repairable.RepairableRepository;
 import org.junit.Before;
@@ -11,6 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -33,9 +33,6 @@ public class FormServiceTests {
 
     @Autowired
     private FormRepository formRepository;
-
-    @Autowired
-    private ItemRepository itemRepository;
 
     private Client owner;
     private Repairable repairable;
@@ -64,10 +61,17 @@ public class FormServiceTests {
     public void whenPatchStatus_shouldReturnFormWithPatchedStatus() {
         Form form = Form.builder().status(Status.TO_DO).build();
         form = formRepository.save(form);
-
         Form patched = Form.builder().status(Status.COMPLETED).build();
         Form form1 = formService.patchFormById(form.getId(), patched);
         assertThat(form1.getStatus(), is(patched.getStatus()));
     }
 
+    @Test
+    public void whenFindFormByStatusSortByDateGetPage_shouldReturnPage() {
+        Form form = formRepository.save(Form.builder().status(Status.UNPAID).build());
+        formRepository.save(Form.builder().status(Status.UNPAID).build());
+        formRepository.save(Form.builder().status(Status.TO_DO).build());
+        Page<Form> page = formService.findFormByStatusSortByDateGetPage(Status.UNPAID, 0, 1);
+        assertThat(page.getContent().get(0), is(form));
+    }
 }

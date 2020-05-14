@@ -1,6 +1,7 @@
 package com.marcinadd.repairshop.form;
 
 import com.marcinadd.repairshop.form.auth.FormAuthService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +24,15 @@ public class FormController {
     @PostMapping
     public Form createForm(@RequestBody Form form) {
         return formService.createForm(form);
+    }
+
+    @GetMapping(value = "", params = "status")
+    public Page<Form> getFormByType(
+            @RequestParam Status status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "25") int itemsPerPage
+    ) {
+        return formService.findFormByStatusSortByDateGetPage(status, page, itemsPerPage);
     }
 
     @GetMapping

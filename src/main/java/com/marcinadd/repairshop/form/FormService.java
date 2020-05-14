@@ -7,6 +7,8 @@ import com.marcinadd.repairshop.item.Item;
 import com.marcinadd.repairshop.item.buyable.Buyable;
 import com.marcinadd.repairshop.repairable.Repairable;
 import com.marcinadd.repairshop.repairable.RepairableRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,6 +16,7 @@ import java.util.Optional;
 
 @Service
 public class FormService {
+    private final static int PAGE_SIZE = 10;
 
     private final ClientRepository clientRepository;
     private final RepairableRepository repairableRepository;
@@ -81,5 +84,9 @@ public class FormService {
             });
         }
         return form;
+    }
+
+    public Page<Form> findFormByStatusSortByDateGetPage(Status status, int pageNumber, int itemsPerPage) {
+        return formRepository.findAllByStatusOrderByCreatedDateDesc(status, PageRequest.of(pageNumber, itemsPerPage));
     }
 }
