@@ -1,6 +1,7 @@
 package com.marcinadd.repairshop.item;
 
 import com.marcinadd.repairshop.item.buyable.ItemForm;
+import com.marcinadd.repairshop.item.buyable.part.NotEnoughPartsInStockException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -17,7 +18,7 @@ public class ItemController {
     }
 
     @PostMapping
-    public Item createItem(@RequestBody @Valid ItemForm itemForm) {
+    public Item createItem(@RequestBody @Valid ItemForm itemForm) throws NotEnoughPartsInStockException {
         return itemService.createItem(itemForm);
     }
 

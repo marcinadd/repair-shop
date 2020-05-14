@@ -2,6 +2,9 @@ package com.marcinadd.repairshop.form;
 
 import com.marcinadd.repairshop.client.Client;
 import com.marcinadd.repairshop.client.ClientRepository;
+import com.marcinadd.repairshop.helper.StringHelper;
+import com.marcinadd.repairshop.item.Item;
+import com.marcinadd.repairshop.item.buyable.Buyable;
 import com.marcinadd.repairshop.repairable.Repairable;
 import com.marcinadd.repairshop.repairable.RepairableRepository;
 import org.springframework.stereotype.Service;
@@ -53,4 +56,30 @@ public class FormService {
         return null;
     }
 
+    public Form hidePersonalDataInForm(Form form) {
+        Client client = form.getClient();
+        if (client != null) {
+            client.setFirstName(StringHelper.replaceCharsWithAsterisks(client.getFirstName(), 1, 1));
+            client.setLastName(StringHelper.replaceCharsWithAsterisks(client.getLastName(), 1, 1));
+            client.setEmail(StringHelper.replaceCharsWithAsterisks(client.getEmail(), 2, 4));
+            client.setPhone(StringHelper.replaceCharsWithAsterisks(client.getPhone(), 2, 2));
+            client.setRepairables(null);
+            form.setClient(client);
+        }
+        Repairable repairable = form.getRepairable();
+        if (repairable != null) {
+            repairable.setSerial(StringHelper.replaceCharsWithAsterisks(repairable.getSerial(), 2, 2));
+            form.setRepairable(repairable);
+        }
+        List<Item> items = form.getItems();
+        if (items != null && !items.isEmpty()) {
+            items.forEach(item -> {
+                Buyable buyable = item.getBuyable();
+                buyable.setDeleted(null);
+                buyable.setPrice(null);
+                item.setBuyable(buyable);
+            });
+        }
+        return form;
+    }
 }

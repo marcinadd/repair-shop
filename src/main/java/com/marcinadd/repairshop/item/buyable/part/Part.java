@@ -3,6 +3,7 @@ package com.marcinadd.repairshop.item.buyable.part;
 import com.marcinadd.repairshop.item.buyable.Buyable;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.Version;
 
 import javax.persistence.Entity;
 
@@ -10,5 +11,7 @@ import javax.persistence.Entity;
 @Getter
 @Setter
 public class Part extends Buyable {
-    private int inStockQuantity;
+    @Version
+    private Integer inStockQuantity;
+    private Boolean unlimited;
 }

@@ -1,6 +1,6 @@
 package com.marcinadd.repairshop.item.buyable.service;
 
-import com.marcinadd.repairshop.item.ItemRepository;
+import com.marcinadd.repairshop.item.buyable.BuyableService;
 
 import java.util.List;
 import java.util.Optional;
@@ -8,11 +8,11 @@ import java.util.Optional;
 @org.springframework.stereotype.Service
 public class ServiceService {
     private final ServiceRepository serviceRepository;
-    private final ItemRepository itemRepository;
+    private final BuyableService buyableService;
 
-    public ServiceService(ServiceRepository serviceRepository, ItemRepository itemRepository) {
+    public ServiceService(ServiceRepository serviceRepository, BuyableService buyableService) {
         this.serviceRepository = serviceRepository;
-        this.itemRepository = itemRepository;
+        this.buyableService = buyableService;
     }
 
     public Service createService(Service service) {
@@ -20,7 +20,7 @@ public class ServiceService {
     }
 
     public List<Service> getServices() {
-        return serviceRepository.findAll();
+        return serviceRepository.findByDeletedIsFalse();
     }
 
     public Service updateService(Long serviceId, Service toUpdateService) {
@@ -34,18 +34,6 @@ public class ServiceService {
     }
 
     public boolean deleteService(Long serviceId) {
-        Optional<Service> optionalService = serviceRepository.findById(serviceId);
-        if (optionalService.isPresent()) {
-            Service service = optionalService.get();
-            Long items = itemRepository.countByBuyable(service);
-            if (items == 0) {
-                serviceRepository.delete(service);
-            } else {
-                service.setDeleted(true);
-                serviceRepository.save(service);
-            }
-            return true;
-        }
-        return false;
+        return buyableService.deleteBuyable(serviceId);
     }
 }

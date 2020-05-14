@@ -1,4 +1,4 @@
-package com.marcinadd.repairshop.item.buyable.service;
+package com.marcinadd.repairshop.item.buyable.part;
 
 import com.google.gson.Gson;
 import com.marcinadd.repairshop.RepairShopApplication;
@@ -17,6 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,59 +34,75 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = RepairShopApplication.class)
 @AutoConfigureMockMvc
-public class ServiceControllerTests {
+public class PartControllerTests {
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
-    private ServiceRepository serviceRepository;
+    private PartRepository partRepository;
 
     @MockBean
     private BuyableRepository buyableRepository;
 
-    private Service service;
+    private Part part;
 
     @Before
     public void init() {
-        service = new Service();
-        service.setId(12L);
-        Mockito.when(serviceRepository.save(any(Service.class)))
-                .thenReturn(service);
+        part = new Part();
+        part.setId(12L);
+        Mockito.when(partRepository.save(any(Part.class)))
+                .thenReturn(part);
 
-        List<Service> services = new ArrayList<>();
-        services.add(new Service());
-        services.add(new Service());
-        Mockito.when(serviceRepository.findByDeletedIsFalse())
-                .thenReturn(services);
+        List<Part> parts = new ArrayList<>();
+        parts.add(new Part());
+        parts.add(new Part());
+        Mockito.when(partRepository.findByDeletedIsFalse())
+                .thenReturn(parts);
 
-        Mockito.when(buyableRepository.findById(service.getId()))
-                .thenReturn(java.util.Optional.ofNullable(service));
+        Mockito.when(partRepository.findById(part.getId()))
+                .thenReturn(java.util.Optional.ofNullable(part));
+
+        Mockito.when(buyableRepository.findById(part.getId()))
+                .thenReturn(java.util.Optional.ofNullable(part));
     }
 
     @Test
     @WithMockUser
-    public void whenCreateService_shouldReturnService() throws Exception {
-        Service createdService = new Service();
-        mockMvc.perform(post("/services").with(csrf())
+    public void whenCreatePart_shouldReturnPart() throws Exception {
+        Part createdPart = new Part();
+        mockMvc.perform(post("/parts").with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(new Gson().toJson(createdService)))
+                .content(new Gson().toJson(createdPart)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(service.getId()));
+                .andExpect(jsonPath("$.id").value(part.getId()));
     }
 
     @Test
     @WithMockUser
-    public void whenGetServices_shouldReturnServicesList() throws Exception {
-        mockMvc.perform(get("/services"))
+    public void whenGetParts_shouldReturnPartsList() throws Exception {
+        mockMvc.perform(get("/parts"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)));
     }
 
     @Test
     @WithMockUser
-    public void whenGetDeleteService_shouldReturnTrue() throws Exception {
-        mockMvc.perform(delete("/services/" + service.getId()).with(csrf()))
+    public void whenUpdatePart_shouldReturnPart() throws Exception {
+        Part updatedPart = new Part();
+        part.setPrice(new BigDecimal("3.35"));
+        mockMvc.perform(patch("/parts/" + part.getId()).with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new Gson().toJson(updatedPart)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(part.getId()));
+    }
+
+    @Test
+    @WithMockUser
+    public void whenGetDeletePart_shouldReturnTrue() throws Exception {
+        mockMvc.perform(delete("/parts/" + part.getId()).with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", is(true)));
     }
+
 }

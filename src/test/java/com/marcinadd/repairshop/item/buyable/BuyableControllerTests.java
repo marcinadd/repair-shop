@@ -47,7 +47,7 @@ public class BuyableControllerTests {
         buyables.add(buyable1);
         buyables.add(buyable2);
         buyables.add(buyable3);
-        Mockito.when(buyableRepository.findAll())
+        Mockito.when(buyableRepository.findByDeletedIsFalse())
                 .thenReturn(buyables);
     }
 

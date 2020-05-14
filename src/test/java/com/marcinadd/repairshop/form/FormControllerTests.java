@@ -15,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -44,11 +45,15 @@ public class FormControllerTests {
     @MockBean
     private FormRepository formRepository;
 
+    private final String rawPassword = "rawPass";
+
     @Autowired
     private MockMvc mockMvc;
 
     private Client client;
     private Repairable repairable;
+    @MockBean
+    private PasswordEncoder passwordEncoder;
     private Form form;
 
     @Before
@@ -61,11 +66,13 @@ public class FormControllerTests {
                 .id(2L)
                 .owner(client)
                 .build();
+        String encodedPassword = "encodedPassword";
         form = Form.builder()
                 .id(3L)
                 .description("Sample desc")
                 .repairable(repairable)
                 .client(client)
+                .password(encodedPassword)
                 .build();
         Mockito.when(clientRepository.findById(client.getId()))
                 .thenReturn(java.util.Optional.of(client));
@@ -79,6 +86,9 @@ public class FormControllerTests {
 
         Mockito.when(formRepository.findById(form.getId()))
                 .thenReturn(java.util.Optional.of(form));
+
+        Mockito.when(passwordEncoder.matches(rawPassword, encodedPassword))
+                .thenReturn(true);
     }
 
     @Test
@@ -120,5 +130,38 @@ public class FormControllerTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(3)))
                 .andExpect(jsonPath("$.description", is(form.getDescription())));
+    }
+
+    @Test
+    @WithMockUser
+    public void whenRegeneratePassword_shouldReturnFormList() throws Exception {
+        mockMvc.perform(get("/forms/" + form.getId() + "/regenerateClientPasswordToPdf"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser
+    public void whenGetFormInfo_shouldReturnFormInfo() throws Exception {
+        mockMvc.perform(post("/forms/" + form.getId() + "/info").with(csrf())
+                .content(rawPassword))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(3)));
+    }
+
+    @Test
+    @WithMockUser
+    public void whenGetFormInfoWithIncorrectPassword_shouldReturnUnauthorized() throws Exception {
+        mockMvc.perform(post("/forms/" + form.getId() + "/info").with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("incorrectPassword"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser
+    public void whenGetFormInfoWhichNotExists_shouldReturnUnauthorized() throws Exception {
+        mockMvc.perform(post("/forms/" + form.getId() + 1 + "/info").with(csrf())
+                .content(rawPassword))
+                .andExpect(status().isUnauthorized());
     }
 }

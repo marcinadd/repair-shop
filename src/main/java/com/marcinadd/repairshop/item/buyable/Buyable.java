@@ -16,4 +16,12 @@ public abstract class Buyable {
     private Long id;
     private String name;
     private BigDecimal price;
+    private Boolean deleted;
+
+    @PrePersist
+    private void prePersist() {
+        if (deleted == null) {
+            deleted = false;
+        }
+    }
 }

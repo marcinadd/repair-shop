@@ -4,9 +4,9 @@ import com.google.gson.Gson;
 import com.marcinadd.repairshop.RepairShopApplication;
 import com.marcinadd.repairshop.form.Form;
 import com.marcinadd.repairshop.form.FormRepository;
-import com.marcinadd.repairshop.item.buyable.Buyable;
 import com.marcinadd.repairshop.item.buyable.BuyableRepository;
 import com.marcinadd.repairshop.item.buyable.ItemForm;
+import com.marcinadd.repairshop.item.buyable.part.Part;
 import com.marcinadd.repairshop.item.buyable.service.Service;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,7 +52,8 @@ public class ItemControllerTests {
     private FormRepository formRepository;
 
     private Item item1;
-    private Buyable buyable;
+    private Service service;
+    private Part part;
     private Form form;
 
     @Before
@@ -61,8 +62,11 @@ public class ItemControllerTests {
         form.setId(32L);
         item1 = new Item();
         item1.setId(34L);
-        buyable = new Service();
-        buyable.setId(36L);
+        service = new Service();
+        service.setId(36L);
+        part = new Part();
+        part.setId(37L);
+        part.setInStockQuantity(3);
 
         Item item2 = new Item();
         List<Item> items = new ArrayList<>();
@@ -71,8 +75,10 @@ public class ItemControllerTests {
         Mockito.when(itemRepository.findAll())
                 .thenReturn(items);
 
-        Mockito.when(buyableRepository.findById(buyable.getId()))
-                .thenReturn(java.util.Optional.ofNullable(buyable));
+        Mockito.when(buyableRepository.findById(service.getId()))
+                .thenReturn(java.util.Optional.ofNullable(service));
+        Mockito.when(buyableRepository.findById(part.getId()))
+                .thenReturn(java.util.Optional.ofNullable(part));
         Mockito.when(formRepository.findById(form.getId()))
                 .thenReturn(java.util.Optional.ofNullable(form));
         Mockito.when(itemRepository.save(any(Item.class)))
@@ -91,16 +97,43 @@ public class ItemControllerTests {
 
     @Test
     @WithMockUser
-    public void whenCreateItem_shouldReturnItem() throws Exception {
+    public void whenCreateItemWithService_shouldReturnItem() throws Exception {
         ItemForm itemForm = new ItemForm();
         itemForm.setQuantity(2);
         itemForm.setFormId(form.getId());
-        itemForm.setBuyableId(buyable.getId());
+        itemForm.setBuyableId(service.getId());
         mockMvc.perform(post("/items").with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new Gson().toJson(itemForm)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(item1.getId()));
+    }
+
+    @Test
+    @WithMockUser
+    public void whenCreateItemWithPart_shouldReturnItem() throws Exception {
+        ItemForm itemForm = new ItemForm();
+        itemForm.setQuantity(2);
+        itemForm.setFormId(form.getId());
+        itemForm.setBuyableId(part.getId());
+        mockMvc.perform(post("/items").with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new Gson().toJson(itemForm)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(item1.getId()));
+    }
+
+    @Test
+    @WithMockUser
+    public void whenCreateItemWithPartOutOfStock_shouldReturnBadRequest() throws Exception {
+        ItemForm itemForm = new ItemForm();
+        itemForm.setQuantity(99999);
+        itemForm.setFormId(form.getId());
+        itemForm.setBuyableId(part.getId());
+        mockMvc.perform(post("/items").with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new Gson().toJson(itemForm)))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
