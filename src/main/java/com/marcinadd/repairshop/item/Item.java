@@ -27,7 +27,6 @@ public class Item {
     private Integer quantity;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "message_sender_id")
     @JsonIgnore
     private Form form;
 }

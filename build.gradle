@@ -1,9 +1,8 @@
 plugins {
-    id 'org.springframework.boot' version '2.2.6.RELEASE'
+    id 'org.springframework.boot' version '2.3.0.RELEASE'
     id 'io.spring.dependency-management' version '1.0.9.RELEASE'
     id 'java'
 }
-
 group = 'com.marcinadd'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
@@ -27,7 +26,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    runtimeOnly 'mysql:mysql-connector-java'
+    compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.20'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
@@ -46,6 +45,7 @@ dependencies {
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: '2.2.6.RELEASE'
     compile group: 'org.keycloak.bom', name: 'keycloak-adapter-bom', version: '10.0.0', ext: 'pom'
     compile group: 'org.keycloak', name: 'keycloak-core', version: '10.0.0'
+    compile group: 'javax.validation', name: 'validation-api', version: '2.0.1.Final'
 
 }
 

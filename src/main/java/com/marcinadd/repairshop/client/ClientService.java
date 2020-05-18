@@ -42,4 +42,13 @@ public class ClientService {
         }
         return null;
     }
+
+    public boolean deleteClient(Long id) {
+        Optional<Client> optionalClient = clientRepository.findById(id);
+        if (optionalClient.isPresent()) {
+            clientRepository.delete(optionalClient.get());
+            return true;
+        }
+        return false;
+    }
 }

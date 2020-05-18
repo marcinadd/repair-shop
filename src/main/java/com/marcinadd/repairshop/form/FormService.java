@@ -89,4 +89,13 @@ public class FormService {
     public Page<Form> findFormByStatusSortByDateGetPage(Status status, int pageNumber, int itemsPerPage) {
         return formRepository.findAllByStatusOrderByCreatedDateDesc(status, PageRequest.of(pageNumber, itemsPerPage));
     }
+
+    public boolean deleteForm(Long id) {
+        Optional<Form> optionalForm = formRepository.findById(id);
+        if (optionalForm.isPresent()) {
+            formRepository.delete(optionalForm.get());
+            return true;
+        }
+        return false;
+    }
 }

@@ -39,4 +39,10 @@ public class ClientController {
     public Client updateClient(@PathVariable("id") Long id, @RequestBody Client client) {
         return clientService.updateClient(id, client);
     }
+
+    @DeleteMapping("{id}")
+    public boolean deleteClient(@PathVariable Long id) {
+        return clientService.deleteClient(id);
+    }
+
 }

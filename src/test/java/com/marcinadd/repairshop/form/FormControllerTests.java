@@ -186,4 +186,12 @@ public class FormControllerTests {
                 .andExpect(jsonPath("$.content", hasSize(1)))
                 .andExpect(jsonPath("$.totalElements", is(1)));
     }
+
+    @Test
+    @WithMockUser
+    public void whenDeleteItem_shouldReturnOk() throws Exception {
+        mockMvc.perform(delete("/forms/" + form.getId()).with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", is(true)));
+    }
 }

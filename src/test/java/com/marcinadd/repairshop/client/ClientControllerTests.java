@@ -38,9 +38,10 @@ public class ClientControllerTests {
     @Autowired
     private MockMvc mockMvc;
 
+    private Client client;
     @Before
     public void init() {
-        Client client = Client.builder()
+        client = Client.builder()
                 .id(1L)
                 .firstName("Adam")
                 .lastName("Test")
@@ -114,5 +115,13 @@ public class ClientControllerTests {
                 .content(new Gson().toJson(toUpdateInfo)))
                 .andExpect(status().isOk());
 
+    }
+
+    @Test
+    @WithMockUser
+    public void whenDeleteItem_shouldReturnOk() throws Exception {
+        mockMvc.perform(delete("/clients/" + client.getId()).with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", is(true)));
     }
 }

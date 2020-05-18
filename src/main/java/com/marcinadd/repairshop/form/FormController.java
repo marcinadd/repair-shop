@@ -41,13 +41,18 @@ public class FormController {
     }
 
     @GetMapping("{id}")
-    public Form getFormById(@PathVariable("id") Long id) {
+    public Form getFormById(@PathVariable Long id) {
         return formService.findFormById(id);
     }
 
     @PatchMapping("{id}")
-    public Form patchForm(@PathVariable("id") Long id, @RequestBody Form form) {
+    public Form patchForm(@PathVariable Long id, @RequestBody Form form) {
         return formService.patchFormById(id, form);
+    }
+
+    @DeleteMapping("{id}")
+    public boolean deleteForm(@PathVariable Long id) {
+        return formService.deleteForm(id);
     }
 
     @GetMapping("{formId}/regenerateClientPasswordToPdf")

@@ -1,5 +1,7 @@
 package com.marcinadd.repairshop.client;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.marcinadd.repairshop.form.Form;
 import com.marcinadd.repairshop.repairable.Repairable;
 import lombok.*;
 
@@ -28,6 +30,10 @@ public class Client {
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Repairable> repairables;
+
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Form> form;
 
     @Override
     public boolean equals(Object o) {
