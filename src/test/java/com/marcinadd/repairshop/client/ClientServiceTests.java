@@ -1,6 +1,9 @@
 package com.marcinadd.repairshop.client;
 
 import com.marcinadd.repairshop.RepairShopApplication;
+import com.marcinadd.repairshop.client.model.ClientDetails;
+import com.marcinadd.repairshop.form.Form;
+import com.marcinadd.repairshop.form.FormRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,11 +13,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ActiveProfiles("test")
 @RunWith(SpringRunner.class)
@@ -27,6 +33,9 @@ public class ClientServiceTests {
 
     @Autowired
     private ClientRepository clientRepository;
+
+    @Autowired
+    private FormRepository formRepository;
 
     private Client client1;
     private Client client2;
@@ -70,5 +79,17 @@ public class ClientServiceTests {
         assertThat(updatedClient.getEmail(), is(toUpdateInfo.getEmail()));
     }
 
-
+    @Test
+    @Transactional
+    public void whenGetClientDetails_shouldReturnClientDetails() {
+        Client client = new Client();
+        List<Form> forms = new ArrayList<>();
+        Form form = formRepository.save(new Form());
+        forms.add(form);
+        client.setForms(forms);
+        client = clientRepository.save(client);
+        ClientDetails clientDetails = clientService.getClientDetails(client.getId());
+        assertThat(clientDetails.getClient(), is(client));
+        assertTrue(clientDetails.getForms().contains(form));
+    }
 }

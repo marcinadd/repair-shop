@@ -33,7 +33,7 @@ public class Client {
 
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private List<Form> form;
+    private List<Form> forms;
 
     @Override
     public boolean equals(Object o) {

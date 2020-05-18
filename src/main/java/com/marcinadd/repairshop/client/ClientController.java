@@ -1,6 +1,9 @@
 package com.marcinadd.repairshop.client;
 
+import com.marcinadd.repairshop.client.model.ClientDetails;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -31,12 +34,12 @@ public class ClientController {
     }
 
     @GetMapping("{id}")
-    public Client findClientById(@PathVariable("id") Long id) {
+    public Client findClientById(@PathVariable Long id) {
         return clientService.findById(id);
     }
 
     @PatchMapping("{id}")
-    public Client updateClient(@PathVariable("id") Long id, @RequestBody Client client) {
+    public Client updateClient(@PathVariable Long id, @RequestBody Client client) {
         return clientService.updateClient(id, client);
     }
 
@@ -45,4 +48,13 @@ public class ClientController {
         return clientService.deleteClient(id);
     }
 
+    @GetMapping("{id}/details")
+    public ClientDetails getClientDetails(@PathVariable Long id) {
+        ClientDetails clientDetails = clientService.getClientDetails(id);
+        if (clientDetails != null) {
+            return clientDetails;
+        }
+        ;
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+    }
 }

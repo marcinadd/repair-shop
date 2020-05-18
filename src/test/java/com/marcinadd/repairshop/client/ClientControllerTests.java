@@ -2,6 +2,7 @@ package com.marcinadd.repairshop.client;
 
 import com.google.gson.Gson;
 import com.marcinadd.repairshop.RepairShopApplication;
+import com.marcinadd.repairshop.form.Form;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,6 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -39,14 +41,20 @@ public class ClientControllerTests {
     private MockMvc mockMvc;
 
     private Client client;
+    private Form form;
     @Before
     public void init() {
+        form = new Form();
+        form.setId(2L);
+        List<Form> forms = new ArrayList<>();
+        forms.add(form);
         client = Client.builder()
                 .id(1L)
                 .firstName("Adam")
                 .lastName("Test")
                 .phone("+48123456789")
                 .email("example@example.com")
+                .forms(forms)
                 .build();
 
         List<Client> clients = Collections.singletonList(client);
@@ -123,5 +131,14 @@ public class ClientControllerTests {
         mockMvc.perform(delete("/clients/" + client.getId()).with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", is(true)));
+    }
+
+    @Test
+    @WithMockUser
+    public void whenGetClientDetails_shouldReturnClientDetails() throws Exception {
+        mockMvc.perform(get("/clients/" + client.getId() + "/details"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.client.id", is(1)))
+                .andExpect(jsonPath("$.forms[0].id", is(2)));
     }
 }

@@ -1,5 +1,6 @@
 package com.marcinadd.repairshop.client;
 
+import com.marcinadd.repairshop.client.model.ClientDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -50,5 +51,17 @@ public class ClientService {
             return true;
         }
         return false;
+    }
+
+    public ClientDetails getClientDetails(Long clientId) {
+        Optional<Client> optionalClient = clientRepository.findById(clientId);
+        if (optionalClient.isPresent()) {
+            Client client = optionalClient.get();
+            ClientDetails clientDetails = new ClientDetails();
+            clientDetails.setClient(client);
+            clientDetails.setForms(client.getForms());
+            return clientDetails;
+        }
+        return null;
     }
 }
